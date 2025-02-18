@@ -2,7 +2,38 @@ export async function getPersons() {
   return data;
 }
 
-const data = [
+export async function getPerson(id: string) {
+  return data.find((p) => p.id === id);
+}
+
+export async function deletePerson(id: string) {
+  const person = data.find((p) => p.id === id);
+  if (person) {
+    data = data.filter((p) => p.id !== id);
+    return true;
+  } else {
+    return false;
+  }
+}
+
+export async function addPerson(person: any) {
+  const newPerson = {
+    id: Math.floor(Math.random() * 1000000).toString(),
+    ...person,
+  };
+  if (
+    data.find((p) => p.name === newPerson.name) ||
+    data.find((p) => p.number === newPerson.number)
+  ) {
+    throw new Error("Name or number already exists");
+  } else if (!newPerson.name || !newPerson.number) {
+    throw new Error("Name or number missing");
+  }
+  data.push(newPerson);
+  return newPerson;
+}
+
+let data = [
   {
     id: "1",
     name: "Arto Hellas",
