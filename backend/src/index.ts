@@ -16,6 +16,7 @@ app.use(cors());
 
 app.use("/api", personsController);
 app.use("/info", infoController);
+app.use(express.static("dist"));
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
