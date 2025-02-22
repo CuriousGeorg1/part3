@@ -11,7 +11,11 @@ const personsController = Router();
 personsController.get("/persons", async (req, res) => {
   const persons = await getPersons();
   console.log(persons);
-  res.status(200).json(persons);
+  if (persons) {
+    res.status(200).json(persons);
+  } else {
+    res.status(404).end();
+  }
 });
 
 personsController.get("/persons/:id", async (req, res) => {
