@@ -8,66 +8,84 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPersons = getPersons;
 exports.getPerson = getPerson;
 exports.deletePerson = deletePerson;
 exports.addPerson = addPerson;
+const dotenv_1 = __importDefault(require("dotenv"));
+const schema_1 = __importDefault(require("../db/schema"));
+const mongoose = require("mongoose");
+dotenv_1.default.config();
+const db = process.env.DB_URL_TEST;
+mongoose.set("strictQuery", false);
+mongoose.connect(db);
 function getPersons() {
     return __awaiter(this, void 0, void 0, function* () {
-        return data;
+        try {
+            const persons = yield schema_1.default.find({});
+            return persons;
+        }
+        catch (e) {
+            console.log(e.message);
+            return [];
+        }
     });
 }
-function getPerson(id) {
+function getPerson(identifier) {
     return __awaiter(this, void 0, void 0, function* () {
-        return data.find((p) => p.id === id);
+        try {
+            const person = yield schema_1.default.findOne({
+                id: identifier.toString(),
+            });
+            if (!person) {
+                throw new Error("Person not found");
+            }
+            return person;
+        }
+        catch (e) {
+            console.log(e.message);
+            return { id: "", name: "", number: "" };
+        }
     });
 }
 function deletePerson(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        const person = data.find((p) => p.id === id);
-        if (person) {
-            data = data.filter((p) => p.id !== id);
-            return true;
+        try {
+            const person = yield schema_1.default.findOne({ id: id });
+            if (person) {
+                yield schema_1.default.findByIdAndDelete(person._id);
+                return true;
+            }
+            else {
+                return false;
+            }
         }
-        else {
+        catch (e) {
+            console.log(e.message);
             return false;
         }
     });
 }
 function addPerson(person) {
     return __awaiter(this, void 0, void 0, function* () {
-        const newPerson = Object.assign({ id: Math.floor(Math.random() * 1000000).toString() }, person);
-        if (data.find((p) => p.name === newPerson.name) ||
-            data.find((p) => p.number === newPerson.number)) {
+        const newPerson = {
+            id: Math.floor(Math.random() * 1000000).toString(),
+            name: person.name,
+            number: person.number,
+        };
+        if ((yield schema_1.default.findOne({ name: newPerson.name })) ||
+            (yield schema_1.default.findOne({ number: newPerson.number }))) {
             throw new Error("Name or number already exists");
         }
         else if (!newPerson.name || !newPerson.number) {
             throw new Error("Name or number missing");
         }
-        data.push(newPerson);
+        console.log(newPerson);
+        schema_1.default.create(newPerson);
         return newPerson;
     });
 }
-let data = [
-    {
-        id: "1",
-        name: "Arto Hellas",
-        number: "040-123456",
-    },
-    {
-        id: "2",
-        name: "Ada Lovelace",
-        number: "39-44-5323523",
-    },
-    {
-        id: "3",
-        name: "Dan Abramov",
-        number: "12-43-234345",
-    },
-    {
-        id: "4",
-        name: "Mary Poppendieck",
-        number: "39-23-6423122",
-    },
-];

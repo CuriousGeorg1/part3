@@ -15,7 +15,12 @@ const personsController = (0, express_1.Router)();
 personsController.get("/persons", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const persons = yield (0, personsService_1.getPersons)();
     console.log(persons);
-    res.status(200).json(persons);
+    if (persons) {
+        res.status(200).json(persons);
+    }
+    else {
+        res.status(404).end();
+    }
 }));
 personsController.get("/persons/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const person = yield (0, personsService_1.getPerson)(req.params.id);
