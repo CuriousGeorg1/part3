@@ -22,14 +22,19 @@ personsController.get("/persons", (req, res) => __awaiter(void 0, void 0, void 0
         res.status(404).end();
     }
 }));
-personsController.get("/persons/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const person = yield (0, personsService_1.getPerson)(req.params.id);
-    if (person) {
-        console.log(person);
-        res.status(200).json(person);
+personsController.get("/persons/:id", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const person = yield (0, personsService_1.getPerson)(req.params.id);
+        if (person) {
+            console.log(person);
+            res.status(200).json(person);
+        }
+        else {
+            res.status(404).end();
+        }
     }
-    else {
-        res.status(404).end();
+    catch (error) {
+        next(error);
     }
 }));
 personsController.delete("/persons/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -42,10 +47,21 @@ personsController.delete("/persons/:id", (req, res) => __awaiter(void 0, void 0,
     }
 }));
 personsController.post("/persons", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.body);
     const person = req.body;
     try {
         const newPerson = yield (0, personsService_1.addPerson)(person);
         res.status(201).json(newPerson);
+    }
+    catch (e) {
+        res.status(400).json({ error: e.message });
+    }
+}));
+personsController.put("/persons/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const body = req.body;
+    try {
+        const updatedPerson = yield (0, personsService_1.updatePerson)(req.params.id, body);
+        res.status(200).json(updatedPerson);
     }
     catch (e) {
         res.status(400).json({ error: e.message });

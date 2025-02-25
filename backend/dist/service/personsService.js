@@ -16,6 +16,7 @@ exports.getPersons = getPersons;
 exports.getPerson = getPerson;
 exports.deletePerson = deletePerson;
 exports.addPerson = addPerson;
+exports.updatePerson = updatePerson;
 const dotenv_1 = __importDefault(require("dotenv"));
 const schema_1 = __importDefault(require("../db/schema"));
 const mongoose = require("mongoose");
@@ -27,7 +28,17 @@ function getPersons() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const persons = yield schema_1.default.find({});
-            return persons;
+            const sanitizedPersons = persons.map((person) => {
+                const sanitizedPerson = person.toObject();
+                sanitizedPerson.id = sanitizedPerson._id;
+                delete sanitizedPerson._id;
+                delete sanitizedPerson.__v;
+                return sanitizedPerson;
+            });
+            if (Array.isArray(sanitizedPersons)) {
+                return sanitizedPersons;
+            }
+            return [];
         }
         catch (e) {
             console.log(e.message);
@@ -39,23 +50,25 @@ function getPerson(identifier) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const person = yield schema_1.default.findOne({
-                id: identifier.toString(),
+                _id: identifier.toString(),
             });
             if (!person) {
                 throw new Error("Person not found");
             }
-            return person;
+            else {
+                return person;
+            }
         }
         catch (e) {
             console.log(e.message);
-            return { id: "", name: "", number: "" };
         }
     });
 }
 function deletePerson(id) {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log(id);
         try {
-            const person = yield schema_1.default.findOne({ id: id });
+            const person = yield schema_1.default.findOne({ _id: id.toString() });
             if (person) {
                 yield schema_1.default.findByIdAndDelete(person._id);
                 return true;
@@ -73,7 +86,6 @@ function deletePerson(id) {
 function addPerson(person) {
     return __awaiter(this, void 0, void 0, function* () {
         const newPerson = {
-            id: Math.floor(Math.random() * 1000000).toString(),
             name: person.name,
             number: person.number,
         };
@@ -85,7 +97,46 @@ function addPerson(person) {
             throw new Error("Name or number missing");
         }
         console.log(newPerson);
-        schema_1.default.create(newPerson);
-        return newPerson;
+        yield schema_1.default.create(newPerson);
+        console.log("Created: ", newPerson);
+        const createdPerson = yield schema_1.default.findOne({ name: newPerson.name });
+        console.log("Created: ", createdPerson);
+        if (!createdPerson) {
+            throw new Error("Failed to create person");
+        }
+        const sanitizedPerson = createdPerson.toObject();
+        sanitizedPerson.id = sanitizedPerson._id;
+        delete sanitizedPerson._id;
+        delete sanitizedPerson.__v;
+        return sanitizedPerson;
     });
 }
+function updatePerson(id, person) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // console.log(person[0]);
+        try {
+            const updatedPerson = yield schema_1.default.findByIdAndUpdate({ _id: id }, { number: person.number }, { new: true });
+            if (!updatedPerson) {
+                throw new Error("Person not found");
+            }
+            console.log(updatedPerson);
+            return updatedPerson;
+        }
+        catch (e) {
+            console.log(e.message);
+        }
+    });
+}
+// export async function updatePerson(person: Person) {
+//   try {
+//     const personToUpdate = await getPerson(person.id);
+//     if (!personToUpdate) {
+//       throw new Error("Person not found");
+//     }
+//     const updatedPerson = { ...personToUpdate, number: person.number };
+//     PersonModel.findByIdAndUpdate(personToUpdate._id, updatedPerson);
+//     return updatedPerson;
+//   } catch (e: Error | any) {
+//     console.log(e.message);
+//   }
+// }
