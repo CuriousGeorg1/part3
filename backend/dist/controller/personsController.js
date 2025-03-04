@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const personsService_1 = require("../service/personsService");
+const CastError_1 = require("../errors/CastError");
 const personsController = (0, express_1.Router)();
 personsController.get("/persons", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const persons = yield (0, personsService_1.getPersons)();
@@ -29,12 +30,12 @@ personsController.get("/persons/:id", (req, res, next) => __awaiter(void 0, void
             console.log(person);
             res.status(200).json(person);
         }
-        else {
-            res.status(404).end();
-        }
+        // else {
+        //   res.status(404).end();
+        // }
     }
     catch (error) {
-        next(error);
+        next(new CastError_1.CastError("malformatted id"));
     }
 }));
 personsController.delete("/persons/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {

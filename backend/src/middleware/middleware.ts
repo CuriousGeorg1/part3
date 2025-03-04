@@ -1,15 +1,17 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
+import { CastError } from "../errors/CastError";
 
-export const errorHandler = (
-  error: Error | any,
-  request: Request,
-  response: Response,
+export const errorHandler: ErrorRequestHandler = (
+  error: Error & { name?: String },
+  req: Request,
+  res: Response,
   next: NextFunction
 ) => {
-  if (error.name === "CastError") {
-    return response.status(400).send({ error: "malformatted id" });
-  }
-
   console.error(error.stack);
-  response.status(500).json({ error: "internal server error" });
+
+  if (error instanceof CastError) {
+    res.status(error.statusCode).json(error.serialize());
+    // res.send("error");
+    next(error);
+  }
 };

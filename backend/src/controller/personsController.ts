@@ -6,10 +6,11 @@ import {
   addPerson,
   updatePerson,
 } from "../service/personsService";
+import { CastError } from "../errors/CastError";
 
 const personsController = Router();
 
-personsController.get("/persons", async (req, res) => {
+personsController.get("/persons", async (req: Request, res: Response) => {
   const persons = await getPersons();
   console.log(persons);
   if (persons) {
@@ -19,6 +20,7 @@ personsController.get("/persons", async (req, res) => {
   }
 });
 
+// TODO: check error handling
 personsController.get(
   "/persons/:id",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -27,25 +29,30 @@ personsController.get(
       if (person) {
         console.log(person);
         res.status(200).json(person);
-      } else {
-        res.status(404).end();
       }
+      //  else {
+      //   res.status(404).end();
+      // }
     } catch (error: Error | any) {
-      next(error);
+      console.log("caught an error!");
+      next(new CastError());
     }
   }
 );
 
-personsController.delete("/persons/:id", async (req, res) => {
-  const person = await deletePerson(req.params.id);
-  if (person) {
-    res.status(204).end();
-  } else {
-    res.status(404).end();
+personsController.delete(
+  "/persons/:id",
+  async (req: Request, res: Response) => {
+    const person = await deletePerson(req.params.id);
+    if (person) {
+      res.status(204).end();
+    } else {
+      res.status(404).end();
+    }
   }
-});
+);
 
-personsController.post("/persons", async (req, res) => {
+personsController.post("/persons", async (req: Request, res: Response) => {
   console.log(req.body);
   const person = req.body;
   try {
@@ -56,7 +63,7 @@ personsController.post("/persons", async (req, res) => {
   }
 });
 
-personsController.put("/persons/:id", async (req, res) => {
+personsController.put("/persons/:id", async (req: Request, res: Response) => {
   const body = req.body;
   try {
     const updatedPerson = await updatePerson(req.params.id, body);
