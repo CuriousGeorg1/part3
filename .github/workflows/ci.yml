@@ -15,6 +15,6 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "14"
-      - run: cs backend
+      - run: cd backend
       - run: npm install
       - run: npm test
