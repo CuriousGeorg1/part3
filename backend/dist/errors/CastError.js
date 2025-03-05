@@ -1,14 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CastError = void 0;
-class CastError extends Error {
-    constructor(message) {
+const CustomError_1 = require("./CustomError");
+class CastError extends CustomError_1.CustomError {
+    constructor() {
         super("malformatted id");
-        this.statusCode = 404;
-        this.name = "CastError";
+        this.statusCode = 400;
+        Object.setPrototypeOf(this, CastError.prototype);
     }
     serialize() {
-        return { error: this.message };
+        return { message: "malformatted id" };
     }
 }
 exports.CastError = CastError;

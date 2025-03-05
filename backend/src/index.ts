@@ -21,10 +21,10 @@ app.use("/api", personsController);
 app.use("/info", infoController);
 app.use(express.static("dist"));
 
-app.all("*", async (req: Request, res: Response, next: NextFunction) => {
-  console.log("We are in app.all");
-  next(new CastError());
-});
+// app.all("*", async (req: Request, res: Response, next: NextFunction) => {
+//   console.log("We are in app.all");
+//   next(new CastError());
+// });
 
 app.use(errorHandler); // Commented out to acoid errors
 

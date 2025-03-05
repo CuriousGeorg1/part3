@@ -19,6 +19,7 @@ exports.addPerson = addPerson;
 exports.updatePerson = updatePerson;
 const dotenv_1 = __importDefault(require("dotenv"));
 const schema_1 = __importDefault(require("../db/schema"));
+const CastError_1 = require("../errors/CastError");
 const mongoose = require("mongoose");
 dotenv_1.default.config();
 const db = process.env.DB_URL_TEST;
@@ -61,6 +62,7 @@ function getPerson(identifier) {
         }
         catch (e) {
             console.log(e.message);
+            throw new CastError_1.CastError();
         }
     });
 }

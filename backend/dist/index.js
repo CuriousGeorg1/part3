@@ -18,6 +18,7 @@ const personsController_1 = __importDefault(require("./controller/personsControl
 const infoController_1 = __importDefault(require("./controller/infoController"));
 const cors_1 = __importDefault(require("cors"));
 const middleware_1 = require("./middleware/middleware");
+const CastError_1 = require("./errors/CastError");
 dotenv_1.default.config();
 const port = process.env.PORT || 3001;
 var morgan = require("morgan");
@@ -29,7 +30,8 @@ app.use("/api", personsController_1.default);
 app.use("/info", infoController_1.default);
 app.use(express_1.default.static("dist"));
 app.all("*", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    next(new Error());
+    console.log("We are in app.all");
+    next(new CastError_1.CastError());
 }));
 app.use(middleware_1.errorHandler); // Commented out to acoid errors
 app.listen(port, () => {

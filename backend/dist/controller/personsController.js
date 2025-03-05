@@ -23,6 +23,7 @@ personsController.get("/persons", (req, res) => __awaiter(void 0, void 0, void 0
         res.status(404).end();
     }
 }));
+// TODO: check error handling
 personsController.get("/persons/:id", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const person = yield (0, personsService_1.getPerson)(req.params.id);
@@ -30,12 +31,13 @@ personsController.get("/persons/:id", (req, res, next) => __awaiter(void 0, void
             console.log(person);
             res.status(200).json(person);
         }
-        // else {
+        //  else {
         //   res.status(404).end();
         // }
     }
     catch (error) {
-        next(new CastError_1.CastError("malformatted id"));
+        console.log("caught an error!");
+        next(new CastError_1.CastError());
     }
 }));
 personsController.delete("/persons/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {

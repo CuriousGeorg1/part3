@@ -1,6 +1,10 @@
 interface Person {
   //   id: string;
-  name: string;
+  name: {
+    type: String;
+    minLength: 3;
+    required: true;
+  };
   number: string;
 }
 export default Person;

@@ -7,6 +7,8 @@ import {
   updatePerson,
 } from "../service/personsService";
 import { CastError } from "../errors/CastError";
+import Person from "../types/person";
+import { ValidationError } from "../errors/ValidationError";
 
 const personsController = Router();
 
@@ -52,25 +54,31 @@ personsController.delete(
   }
 );
 
-personsController.post("/persons", async (req: Request, res: Response) => {
-  console.log(req.body);
-  const person = req.body;
-  try {
-    const newPerson = await addPerson(person);
-    res.status(201).json(newPerson);
-  } catch (e: Error | any) {
-    res.status(400).json({ error: e.message });
+personsController.post(
+  "/persons",
+  async (req: Request, res: Response, next: NextFunction) => {
+    console.log(req.body);
+    try {
+      const person: Person = req.body;
+      const newPerson = await addPerson(person);
+      res.status(201).json(newPerson);
+    } catch (e: Error | any) {
+      next(new ValidationError());
+    }
   }
-});
+);
 
-personsController.put("/persons/:id", async (req: Request, res: Response) => {
-  const body = req.body;
-  try {
-    const updatedPerson = await updatePerson(req.params.id, body);
-    res.status(200).json(updatedPerson);
-  } catch (e: Error | any) {
-    res.status(400).json({ error: e.message });
+personsController.put(
+  "/persons/:id",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const body = req.body;
+      const updatedPerson = await updatePerson(req.params.id, body);
+      res.status(200).json(updatedPerson);
+    } catch (e: Error | any) {
+      next(new ValidationError());
+    }
   }
-});
+);
 
 export default personsController;
