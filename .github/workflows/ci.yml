@@ -1,26 +1,30 @@
 name: Automated Tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - test
+  pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v1
-      with:
-        node-version: 22
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 22
 
-    - name: Install dependencies
-      run: |
-        npm install
-      working-directory: ./backend
+      - name: Install dependencies
+        run: |
+          npm install
+        working-directory: ./backend
 
-    - name: Run tests
-      run: |
-        npm test
-      working-directory: ./backend
+      - name: Run tests
+        run: |
+          npm test
+        working-directory: ./backend

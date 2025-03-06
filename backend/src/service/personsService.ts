@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 import PersonModel from "../db/schema";
 import Person from "../types/person";
-import next from "next";
 import { CastError } from "../errors/CastError";
 
 const mongoose = require("mongoose");
@@ -43,7 +42,7 @@ export async function getPerson(identifier: any) {
     }
   } catch (e: Error | any) {
     console.log(e.message);
-    throw new CastError();
+    new CastError();
   }
 }
 
