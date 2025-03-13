@@ -62,7 +62,7 @@ function getPerson(identifier) {
         }
         catch (e) {
             console.log(e.message);
-            throw new CastError_1.CastError();
+            new CastError_1.CastError();
         }
     });
 }
